@@ -5,102 +5,59 @@ export function TacticalHUD() {
   const [coords, setCoords] = useState({ x: 0, y: 0 })
   const [timeUtc, setTimeUtc] = useState('')
   const [timeJerusalem, setTimeJerusalem] = useState('')
-  const [isMuted, setIsMuted] = useState(audio.getMuted())
+  const [isMuted, setIsMuted] = useState(() => audio.getMuted())
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date()
-      setTimeUtc(
-        now.toLocaleTimeString('en-GB', {
-          timeZone: 'UTC',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        }) + ' UTC'
-      )
-      setTimeJerusalem(
-        now.toLocaleTimeString('en-GB', {
-          timeZone: 'Asia/Jerusalem',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        }) + ' TLV'
-      )
+      setTimeUtc(`${now.toLocaleTimeString('en-GB', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit' })} UTC`)
+      setTimeJerusalem(`${now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit', second: '2-digit' })} TLV`)
     }
-
     updateTime()
-    const timer = setInterval(updateTime, 1000)
+    const timer = window.setInterval(updateTime, 1000)
 
-    const handleMouseMove = (e: MouseEvent) => {
-      setCoords({ x: e.clientX, y: e.clientY })
-    }
-
-    window.addEventListener('mousemove', handleMouseMove)
+    const coarse = window.matchMedia('(pointer: coarse)').matches
+    const handleMouseMove = (event: MouseEvent) => setCoords({ x: event.clientX, y: event.clientY })
+    if (!coarse) window.addEventListener('mousemove', handleMouseMove, { passive: true })
 
     return () => {
-      clearInterval(timer)
+      window.clearInterval(timer)
       window.removeEventListener('mousemove', handleMouseMove)
     }
   }, [])
 
-  const handleToggleSound = () => {
-    const newMute = audio.toggleMute()
-    setIsMuted(newMute)
-  }
+  const handleToggleSound = () => setIsMuted(audio.toggleMute())
 
   return (
     <div className="pointer-events-none fixed inset-0 z-40 select-none">
-      {/* Top Left Corner Bracket */}
-      <div className="absolute top-3 left-3 flex items-start gap-2 font-mono text-[10.5px] text-text-faint sm:top-5 sm:left-5">
-        <div className="h-4 w-4 border-t-2 border-l-2 border-green/60" />
-        <div className="hidden sm:block">
-          <span className="text-green">OSK//SYS.v4.8</span>
-          <span className="mx-2 text-text-faint">|</span>
-          <span>NET: SECURE</span>
-        </div>
+      <div className="absolute left-3 top-3 flex items-start gap-2 font-mono text-[10px] text-text-faint sm:left-5 sm:top-5">
+        <div className="h-4 w-4 border-l border-t border-green/60" />
+        <div className="hidden sm:block"><span className="text-green">OSK//SYS.v5.0</span><span className="mx-2">|</span><span>NET: SECURE</span></div>
       </div>
 
-      {/* Top Right Corner Bracket & Sound Toggle */}
-      <div className="pointer-events-auto absolute top-3 right-3 flex items-center gap-3 font-mono text-[11px] sm:top-5 sm:right-5">
+      <div className="pointer-events-auto absolute right-3 top-3 flex items-center gap-3 font-mono text-[10px] sm:right-5 sm:top-5">
         <button
+          type="button"
           onClick={handleToggleSound}
           onMouseEnter={() => audio.playHover()}
-          className={`flex items-center gap-1.5 rounded border px-2.5 py-1 transition-all ${
-            !isMuted
-              ? 'border-green/60 bg-green/10 text-green shadow-[0_0_10px_rgba(61,255,160,0.2)]'
-              : 'border-line bg-bg-panel text-text-faint hover:text-text-dim'
-          }`}
-          title="Toggle Synthesized Audio Feedback"
+          className={`flex items-center gap-1.5 rounded border px-2.5 py-1 transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-green ${!isMuted ? 'border-green/60 bg-green/10 text-green shadow-[0_0_10px_rgba(61,255,160,0.2)]' : 'border-line bg-bg-panel text-text-faint hover:text-text-dim'}`}
+          aria-label={isMuted ? 'Enable synthesized audio' : 'Mute synthesized audio'}
+          aria-pressed={isMuted}
         >
-          <span className="relative flex h-2 w-2">
-            {!isMuted && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green opacity-75" />}
-            <span className={`inline-flex h-2 w-2 rounded-full ${!isMuted ? 'bg-green' : 'bg-text-faint'}`} />
-          </span>
+          <span className={`h-1.5 w-1.5 rounded-full ${!isMuted ? 'bg-green shadow-[0_0_7px_var(--color-green)]' : 'bg-text-faint'}`} />
           <span>AUDIO: {isMuted ? 'MUTED' : 'SYNTH ON'}</span>
         </button>
-        <div className="h-4 w-4 border-t-2 border-r-2 border-green/60" />
+        <div className="h-4 w-4 border-r border-t border-green/60" />
       </div>
 
-      {/* Bottom Left Corner Bracket & Live Coordinates */}
-      <div className="absolute bottom-3 left-3 flex items-end gap-2 font-mono text-[10.5px] text-text-faint sm:bottom-5 sm:left-5">
-        <div className="h-4 w-4 border-b-2 border-l-2 border-green/60" />
-        <div className="hidden md:block">
-          <span className="text-text-dim">COORD: </span>
-          <span className="text-green">X:{coords.x} Y:{coords.y}</span>
-          <span className="mx-2 text-text-faint">|</span>
-          <span className="text-text-dim">GRID: </span>
-          <span>32.08°N 34.78°E</span>
-        </div>
+      <div className="absolute bottom-3 left-3 flex items-end gap-2 font-mono text-[10px] text-text-faint sm:bottom-5 sm:left-5">
+        <div className="h-4 w-4 border-b border-l border-green/60" />
+        <div className="hidden md:block"><span className="text-text-dim">CURSOR </span><span className="text-green">X:{coords.x} Y:{coords.y}</span><span className="mx-2">|</span><span>GRID: 32.08°N 34.78°E</span></div>
       </div>
 
-      {/* Bottom Right Corner Bracket & Live Dual Clock */}
-      <div className="absolute bottom-3 right-3 flex items-end gap-2 font-mono text-[10.5px] text-text-faint sm:bottom-5 sm:right-5">
-        <div className="hidden sm:flex items-center gap-2">
-          <span className="text-cyan">{timeJerusalem}</span>
-          <span>//</span>
-          <span>{timeUtc}</span>
-        </div>
-        <div className="h-4 w-4 border-b-2 border-r-2 border-green/60" />
+      <div className="absolute bottom-3 right-3 flex items-end gap-2 font-mono text-[10px] text-text-faint sm:bottom-5 sm:right-5">
+        <div className="hidden items-center gap-2 sm:flex"><span className="text-cyan">{timeJerusalem}</span><span>//</span><span>{timeUtc}</span></div>
+        <div className="h-4 w-4 border-b border-r border-green/60" />
       </div>
     </div>
   )
