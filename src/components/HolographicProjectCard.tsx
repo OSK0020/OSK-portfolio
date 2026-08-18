@@ -6,9 +6,10 @@ import { audio } from '../utils/audioEngine'
 interface Props {
   project: Project
   accentColor?: string
+  onOpenDossier?: (project: Project) => void
 }
 
-export function HolographicProjectCard({ project, accentColor }: Props) {
+export function HolographicProjectCard({ project, accentColor, onOpenDossier }: Props) {
   const cardRef = useRef<HTMLDivElement | null>(null)
   const [rotation, setRotation] = useState({ x: 0, y: 0 })
   const [glarePos, setGlarePos] = useState({ x: 50, y: 50, opacity: 0 })
@@ -24,14 +25,14 @@ export function HolographicProjectCard({ project, accentColor }: Props) {
     const centerX = rect.width / 2
     const centerY = rect.height / 2
 
-    const rotX = ((y - centerY) / centerY) * -10
-    const rotY = ((x - centerX) / centerX) * 10
+    const rotX = ((y - centerY) / centerY) * -8
+    const rotY = ((x - centerX) / centerX) * 8
 
     setRotation({ x: rotX, y: rotY })
     setGlarePos({
       x: (x / rect.width) * 100,
       y: (y / rect.height) * 100,
-      opacity: 0.15,
+      opacity: 0.16,
     })
   }
 
@@ -40,10 +41,20 @@ export function HolographicProjectCard({ project, accentColor }: Props) {
     setGlarePos((prev) => ({ ...prev, opacity: 0 }))
   }
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement
+    if (target.tagName === 'A' || target.closest('a')) {
+      return
+    }
+    audio.playClick(1400)
+    onOpenDossier?.(project)
+  }
+
   return (
     <div
       style={{ perspective: '1000px' }}
-      className="group relative"
+      className="group relative cursor-pointer"
+      onClick={handleCardClick}
       onMouseEnter={() => audio.playHover()}
     >
       <div
@@ -52,16 +63,16 @@ export function HolographicProjectCard({ project, accentColor }: Props) {
         onMouseLeave={handleMouseLeave}
         style={{
           transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-          borderColor: accentColor ? `color-mix(in srgb, ${accentColor} 30%, var(--color-line))` : undefined,
-          transition: 'transform 0.15s ease-out, box-shadow 0.2s ease-out',
+          borderColor: accentColor ? `color-mix(in srgb, ${accentColor} 35%, var(--color-line))` : undefined,
+          transition: 'transform 0.15s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out',
         }}
-        className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-line bg-bg-panel p-7 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)] group-hover:border-text-dim/40 group-hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)]"
+        className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-line bg-bg-panel p-7 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)] group-hover:border-cyan/50 group-hover:shadow-neon-cyan/20"
       >
         {/* Holographic Glare Overlay */}
         <div
           className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-300"
           style={{
-            background: `radial-gradient(circle at ${glarePos.x}% ${glarePos.y}%, rgba(255,255,255,${glarePos.opacity}), transparent 60%)`,
+            background: `radial-gradient(400px circle at ${glarePos.x}% ${glarePos.y}%, rgba(0, 240, 255, ${glarePos.opacity}), transparent 70%)`,
           }}
         />
 
@@ -74,16 +85,28 @@ export function HolographicProjectCard({ project, accentColor }: Props) {
             </span>
           </div>
 
-          <h3 className="mt-4 font-display text-2xl font-bold text-text group-hover:text-green transition-colors">
+          <h3 className="mt-4 font-display text-2xl font-bold text-text group-hover:text-cyan transition-colors">
             {project.name}
           </h3>
-          <span className="mt-1 block font-mono text-xs text-cyan">
+          <span className="mt-1 block font-mono text-xs text-green">
             {project.tag}
           </span>
 
-          <p className="mt-4 text-sm leading-relaxed text-text-dim">
+          <p className="mt-4 text-sm leading-relaxed text-text-dim font-sans">
             {project.description}
           </p>
+
+          {/* Quick Metrics Bar */}
+          {project.metrics && (
+            <div className="mt-5 grid grid-cols-3 gap-2 border-t border-line/60 pt-4">
+              {project.metrics.map((m) => (
+                <div key={m.label} className="rounded-lg bg-bg-panel-alt p-2 text-center">
+                  <span className="block text-[9.5px] text-text-faint uppercase">{m.label}</span>
+                  <span className="block text-xs font-bold text-text mt-0.5">{m.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Tech Badges & Actions */}
@@ -100,15 +123,22 @@ export function HolographicProjectCard({ project, accentColor }: Props) {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => onOpenDossier?.(project)}
+              className="flex-1 rounded-lg border border-cyan/40 bg-cyan/10 py-2.5 font-mono text-xs font-bold text-cyan transition-all hover:bg-cyan hover:text-[#05080e] hover:shadow-neon-cyan"
+            >
+              INTEL DOSSIER 🔍
+            </button>
             {project.liveUrl && (
               <a
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener"
                 onClick={() => audio.playClick(1200)}
-                className="flex-1 text-center rounded border border-green bg-green/10 py-2.5 font-mono text-xs font-bold text-green transition-all hover:bg-green hover:text-[#06090b] hover:shadow-[0_0_16px_rgba(61,255,160,0.35)]"
+                className="rounded-lg border border-green bg-green/10 px-4 py-2.5 font-mono text-xs font-bold text-green transition-all hover:bg-green hover:text-[#05080e] hover:shadow-neon-green"
               >
-                Live Deployment ↗
+                Live ↗
               </a>
             )}
             <a
@@ -116,10 +146,10 @@ export function HolographicProjectCard({ project, accentColor }: Props) {
               target="_blank"
               rel="noopener"
               onClick={() => audio.playClick(1000)}
-              className="rounded border border-line px-3.5 py-2.5 font-mono text-xs text-text-dim transition-colors hover:border-text hover:text-text"
-              title="View Source Repository"
+              className="rounded-lg border border-line px-3 py-2.5 font-mono text-xs text-text-dim transition-colors hover:border-text hover:text-text"
+              title="GitHub Repository"
             >
-              GitHub ↗
+              GH ↗
             </a>
           </div>
         </div>

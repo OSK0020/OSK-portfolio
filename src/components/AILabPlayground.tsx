@@ -1,34 +1,19 @@
 import { useState, useEffect, useRef } from 'react'
 import { audio } from '../utils/audioEngine'
 
-interface ModelSpec {
-  id: string
-  name: string
-  latency: string
-  resolution: string
-  vram: string
-  accuracy: string
-  color: string
-}
-
-const MODELS: ModelSpec[] = [
-  { id: 'flux', name: 'FLUX.1-Dev (Neural)', latency: '1.84s', resolution: '1024x1024', vram: '12.4 GB', accuracy: '99.4%', color: '#3dffa0' },
-  { id: 'sdxl', name: 'SDXL Turbo (Real-time)', latency: '0.42s', resolution: '512x512', vram: '6.8 GB', accuracy: '96.2%', color: '#5fb9ff' },
-  { id: 'gemini', name: 'Gemini Vision Cascade', latency: '0.95s', resolution: 'Vector / Multimodal', vram: 'Cloud API', accuracy: '98.8%', color: '#ffb648' },
-]
-
-const PROMPTS = [
-  'Tactical orbital surveillance satellite over stormy atmosphere, volumetric laser scan',
-  'Cybernetic neural core matrix with pulsating fiber-optic filaments, 8k octane render',
-  'Autonomous reconnaissance drone navigating neon canyon grid at midnight',
-]
-
 export function AILabPlayground() {
-  const [selectedModel, setSelectedModel] = useState<ModelSpec>(MODELS[0])
-  const [activePromptIndex, setActivePromptIndex] = useState(0)
+  const [model, setModel] = useState<'8B' | '70B' | 'MoE-8x7B'>('70B')
+  const [quantization, setQuantization] = useState<'INT4' | 'INT8' | 'FP16'>('INT4')
+  const [batchSize, setBatchSize] = useState(16)
   const [isSynthesizing, setIsSynthesizing] = useState(false)
-  const [progress, setProgress] = useState(100)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+
+  // Dynamic calculations based on Google Architecture Spec
+  const baseVram = model === '70B' ? 70 : model === '8B' ? 8 : 45
+  const quantFactor = quantization === 'FP16' ? 2 : quantization === 'INT8' ? 1 : 0.5
+  const estimatedVram = (baseVram * quantFactor + batchSize * 0.38).toFixed(1)
+  const throughput = Math.round((1250 / (baseVram * 0.1)) * (1 / quantFactor) * (batchSize / 8))
+  const latencyMs = Math.round(18 * quantFactor * (baseVram / 10))
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -37,25 +22,25 @@ export function AILabPlayground() {
     if (!ctx) return
 
     let animationFrameId: number
-    const w = (canvas.width = 380)
-    const h = (canvas.height = 200)
+    const w = (canvas.width = 440)
+    const h = (canvas.height = 160)
 
     let t = 0
     const render = () => {
-      t += isSynthesizing ? 0.08 : 0.02
+      t += isSynthesizing ? 0.09 : 0.025
       ctx.clearRect(0, 0, w, h)
 
       // Cyber wave / Latent vector animation
       ctx.lineWidth = 1.5
       for (let wave = 0; wave < 3; wave++) {
         ctx.beginPath()
-        ctx.globalAlpha = isSynthesizing ? 0.85 : 0.35
-        ctx.strokeStyle = wave === 0 ? selectedModel.color : wave === 1 ? '#5fb9ff' : '#ff4b3e'
+        ctx.globalAlpha = isSynthesizing ? 0.9 : 0.4
+        ctx.strokeStyle = wave === 0 ? '#00f0ff' : wave === 1 ? '#00ff9d' : '#ff0055'
 
         for (let x = 0; x < w; x += 4) {
-          const freq = 0.02 + wave * 0.01
-          const amp = isSynthesizing ? 35 : 18
-          const y = h / 2 + Math.sin(x * freq + t + wave) * amp * Math.cos(x * 0.01 + t * 0.5)
+          const freq = 0.022 + wave * 0.012
+          const amp = isSynthesizing ? 32 : 18
+          const y = h / 2 + Math.sin(x * freq + t + wave) * amp * Math.cos(x * 0.01 + t * 0.4)
 
           if (x === 0) ctx.moveTo(x, y)
           else ctx.lineTo(x, y)
@@ -65,10 +50,10 @@ export function AILabPlayground() {
       }
 
       // Latent Nodes
-      for (let i = 0; i < 8; i++) {
-        const nx = ((i * 48 + t * 40) % w)
-        const ny = h / 2 + Math.sin(nx * 0.03 + t) * 25
-        ctx.fillStyle = selectedModel.color
+      for (let i = 0; i < 7; i++) {
+        const nx = (i * 65 + t * 35) % w
+        const ny = h / 2 + Math.sin(nx * 0.03 + t) * 22
+        ctx.fillStyle = '#00f0ff'
         ctx.beginPath()
         ctx.arc(nx, ny, 2.5, 0, Math.PI * 2)
         ctx.fill()
@@ -79,125 +64,173 @@ export function AILabPlayground() {
 
     render()
     return () => cancelAnimationFrame(animationFrameId)
-  }, [selectedModel, isSynthesizing])
+  }, [isSynthesizing])
 
-  const runSynthesis = () => {
+  const runBenchmark = () => {
     if (isSynthesizing) return
     setIsSynthesizing(true)
-    setProgress(0)
     audio.playRadarSweep()
 
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          setIsSynthesizing(false)
-          audio.playClick(1500)
-          return 100
-        }
-        return prev + 20
-      })
-    }, 180)
+    setTimeout(() => {
+      setIsSynthesizing(false)
+      audio.playClick(1400)
+    }, 1800)
   }
 
   return (
-    <div className="rounded-2xl border border-line bg-bg-panel p-6 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)]">
-      <div className="flex items-center justify-between border-b border-line pb-4 font-mono text-xs">
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-cyan animate-pulse" />
-          <span className="font-bold text-text">AI MODELS LABORATORY // INTERACTIVE SANDBOX</span>
+    <div className="rounded-2xl border border-cyan/30 bg-bg-panel p-7 font-mono shadow-neon-cyan/20 backdrop-blur-xl">
+      {/* Header */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-line pb-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-cyan animate-pulse" />
+            <h3 className="text-sm font-bold tracking-wider text-cyan uppercase">
+              AI INFERENCE &amp; VRAM BENCHMARK LAB
+            </h3>
+          </div>
+          <p className="text-[11px] text-text-dim mt-0.5">
+            Real-time throughput, latency &amp; memory allocation simulator
+          </p>
         </div>
-        <span className="text-text-faint hidden sm:inline">WebGL &amp; Latent Benchmark</span>
+        <span className="rounded border border-green/40 bg-green/10 px-3 py-1 text-[11px] font-bold text-green">
+          CUDA 12.4 / ROCm ONLINE
+        </span>
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        {/* Left: Model Controls & Visualizer */}
-        <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        {/* Controls */}
+        <div className="space-y-5">
           <div>
-            <label className="block font-mono text-[11px] uppercase tracking-wider text-text-faint">
-              SELECT GENERATIVE ARCHITECTURE:
+            <label className="text-[11px] text-text-faint uppercase font-bold tracking-wider">
+              MODEL_ARCHITECTURE
             </label>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {MODELS.map((m) => (
+            <div className="mt-2 flex gap-2">
+              {(['8B', '70B', 'MoE-8x7B'] as const).map((m) => (
                 <button
-                  key={m.id}
+                  key={m}
                   onClick={() => {
-                    setSelectedModel(m)
-                    audio.playClick(1100)
+                    setModel(m)
+                    audio.playClick()
                   }}
                   onMouseEnter={() => audio.playHover()}
-                  className={`rounded-lg border px-3 py-1.5 font-mono text-xs transition-all ${
-                    selectedModel.id === m.id
-                      ? 'border-cyan bg-cyan/15 text-text font-bold shadow-[0_0_12px_rgba(95,185,255,0.3)]'
-                      : 'border-line bg-bg-panel-alt text-text-dim hover:text-text'
+                  className={`flex-1 rounded-lg border px-2.5 py-2 text-xs transition-all ${
+                    model === m
+                      ? 'border-cyan bg-cyan/20 text-text font-bold shadow-neon-cyan/20'
+                      : 'border-line bg-bg-panel-alt text-text-dim hover:border-text-dim'
                   }`}
                 >
-                  {m.name}
+                  {m}
                 </button>
               ))}
             </div>
           </div>
 
           <div>
-            <label className="block font-mono text-[11px] uppercase tracking-wider text-text-faint">
-              TARGET PROMPT:
+            <label className="text-[11px] text-text-faint uppercase font-bold tracking-wider">
+              QUANTIZATION_PRECISION
             </label>
-            <div className="mt-2 rounded-lg border border-line bg-bg-panel-alt p-3 font-mono text-xs text-text-dim">
-              "{PROMPTS[activePromptIndex]}"
-            </div>
             <div className="mt-2 flex gap-2">
-              {PROMPTS.map((_, idx) => (
+              {(['INT4', 'INT8', 'FP16'] as const).map((q) => (
                 <button
-                  key={idx}
+                  key={q}
                   onClick={() => {
-                    setActivePromptIndex(idx)
-                    audio.playHover()
+                    setQuantization(q)
+                    audio.playClick()
                   }}
-                  className={`h-2 rounded-full transition-all ${
-                    activePromptIndex === idx ? 'w-8 bg-cyan' : 'w-2 bg-line'
+                  onMouseEnter={() => audio.playHover()}
+                  className={`flex-1 rounded-lg border px-2.5 py-2 text-xs transition-all ${
+                    quantization === q
+                      ? 'border-green bg-green/20 text-text font-bold shadow-neon-green/20'
+                      : 'border-line bg-bg-panel-alt text-text-dim hover:border-text-dim'
                   }`}
-                />
+                >
+                  {q}
+                </button>
               ))}
             </div>
           </div>
 
-          {/* Action Button */}
+          <div>
+            <div className="flex justify-between text-[11px] text-text-dim">
+              <span>CONCURRENT_BATCH_SIZE</span>
+              <span className="text-cyan font-bold">{batchSize} streams</span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="64"
+              value={batchSize}
+              onChange={(e) => setBatchSize(Number(e.target.value))}
+              className="mt-2 w-full accent-cyan cursor-pointer"
+            />
+          </div>
+
           <button
-            onClick={runSynthesis}
+            onClick={runBenchmark}
             disabled={isSynthesizing}
             onMouseEnter={() => audio.playHover()}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-cyan bg-cyan/10 py-3 font-mono text-xs font-bold text-cyan transition-all hover:bg-cyan hover:text-[#06090b] hover:shadow-[0_0_20px_rgba(95,185,255,0.4)] disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-cyan bg-cyan/10 py-3 text-xs font-bold text-cyan transition-all hover:bg-cyan hover:text-[#05080e] hover:shadow-neon-cyan/40 disabled:opacity-50"
           >
-            {isSynthesizing ? `SYNTHESIZING LATENT MATRIX [${progress}%]...` : '⚡ RUN BENCHMARK INFERENCE'}
+            {isSynthesizing ? 'BENCHMARKING INFERENCE STREAMS...' : '⚡ RUN BENCHMARK INFERENCE'}
           </button>
         </div>
 
-        {/* Right: Waveform Canvas & Live Metrics */}
-        <div className="flex flex-col justify-between rounded-xl border border-line-soft bg-bg-panel-alt p-4">
-          <div>
-            <span className="font-mono text-[11px] text-text-faint">LATENT VECTOR WAVEFORM:</span>
-            <div className="mt-2 overflow-hidden rounded border border-line bg-bg flex items-center justify-center">
-              <canvas ref={canvasRef} className="h-[120px] w-full" />
+        {/* Live Metrics & Waveform */}
+        <div className="lg:col-span-2 flex flex-col justify-between space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="flex flex-col justify-between rounded-xl border border-cyan/30 bg-bg-panel-alt p-4">
+              <span className="text-[10px] text-text-faint uppercase font-bold tracking-wider">
+                ESTIMATED VRAM
+              </span>
+              <div className="my-2 text-2xl font-bold text-cyan">
+                {estimatedVram} <span className="text-xs text-text-dim">GB</span>
+              </div>
+              <div className="h-1.5 w-full bg-bg rounded-full overflow-hidden border border-line">
+                <div
+                  className="h-full bg-cyan transition-all duration-300"
+                  style={{ width: `${Math.min(100, (Number(estimatedVram) / 80) * 100)}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-between rounded-xl border border-green/30 bg-bg-panel-alt p-4">
+              <span className="text-[10px] text-text-faint uppercase font-bold tracking-wider">
+                THROUGHPUT
+              </span>
+              <div className="my-2 text-2xl font-bold text-green">
+                {throughput} <span className="text-xs text-text-dim">tok/s</span>
+              </div>
+              <div className="h-1.5 w-full bg-bg rounded-full overflow-hidden border border-line">
+                <div
+                  className="h-full bg-green transition-all duration-300"
+                  style={{ width: `${Math.min(100, (throughput / 1600) * 100)}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-between rounded-xl border border-amber/30 bg-bg-panel-alt p-4">
+              <span className="text-[10px] text-text-faint uppercase font-bold tracking-wider">
+                P99 LATENCY
+              </span>
+              <div className="my-2 text-2xl font-bold text-amber">
+                {latencyMs} <span className="text-xs text-text-dim">ms</span>
+              </div>
+              <div className="h-1.5 w-full bg-bg rounded-full overflow-hidden border border-line">
+                <div
+                  className="h-full bg-amber transition-all duration-300"
+                  style={{ width: `${Math.min(100, (latencyMs / 200) * 100)}%` }}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Model Telemetry */}
-          <div className="mt-4 grid grid-cols-2 gap-2 font-mono text-xs">
-            <div className="rounded border border-line bg-bg p-2">
-              <span className="block text-[10px] text-text-faint">INFERENCE SPEED</span>
-              <span className="font-bold text-green">{selectedModel.latency}</span>
-            </div>
-            <div className="rounded border border-line bg-bg p-2">
-              <span className="block text-[10px] text-text-faint">FID ACCURACY</span>
-              <span className="font-bold text-cyan">{selectedModel.accuracy}</span>
-            </div>
-            <div className="rounded border border-line bg-bg p-2">
-              <span className="block text-[10px] text-text-faint">TARGET RES</span>
-              <span className="font-bold text-text">{selectedModel.resolution}</span>
-            </div>
-            <div className="rounded border border-line bg-bg p-2">
-              <span className="block text-[10px] text-text-faint">GPU FOOTPRINT</span>
-              <span className="font-bold text-amber">{selectedModel.vram}</span>
+          {/* Latent Waveform Canvas */}
+          <div className="rounded-xl border border-line bg-bg p-4">
+            <span className="text-[10.5px] text-text-faint uppercase tracking-wider block mb-2 font-bold">
+              NEURAL LATENT VECTOR WAVEFORM:
+            </span>
+            <div className="overflow-hidden rounded border border-line/60 bg-bg-panel-alt flex items-center justify-center">
+              <canvas ref={canvasRef} className="h-[130px] w-full" />
             </div>
           </div>
         </div>

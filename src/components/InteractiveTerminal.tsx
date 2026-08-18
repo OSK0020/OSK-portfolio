@@ -11,13 +11,8 @@ export function InteractiveTerminal() {
   const [input, setInput] = useState('')
   const [history, setHistory] = useState<HistoryEntry[]>([
     {
-      command: 'system.init',
-      output: 'OSK COMMAND MATRIX v4.8 [REAL-TIME INTEL & AI SYSTEMS INITIALIZED]',
-      type: 'system',
-    },
-    {
-      command: 'help',
-      output: 'Available commands: projects, osn, ai-lab, threats, skills, whoami, contact, matrix, clear',
+      command: 'sys_init',
+      output: 'TACTICAL CLI SHELL v2.4 LOADED // ENCRYPTED SESSION: AES-256-GCM. Type "help" for command directory.',
       type: 'system',
     },
   ])
@@ -36,7 +31,7 @@ export function InteractiveTerminal() {
 
     setCommandHistory((prev) => [...prev, cleanCmd])
     setHistoryIndex(-1)
-    audio.playClick(900)
+    audio.playClick(650)
 
     let response: React.ReactNode = ''
     let type: HistoryEntry['type'] = 'cmd'
@@ -44,16 +39,17 @@ export function InteractiveTerminal() {
     switch (cleanCmd) {
       case 'help':
         response = (
-          <div className="space-y-1 text-text-dim">
-            <p className="text-green font-bold">OPERATOR CLI COMMAND DIRECTORY:</p>
-            <p><span className="text-cyan font-bold">projects</span> - Display all active production products & repositories</p>
-            <p><span className="text-red font-bold">osn</span> - Query Observer Security Network architecture & live feeds</p>
-            <p><span className="text-cyan font-bold">ai-lab</span> - Inspect AI Models Laboratory WebGL engine</p>
+          <div className="space-y-1 text-text-dim font-mono text-xs">
+            <p className="text-green font-bold">AVAILABLE COMMAND DIRECTORY:</p>
+            <p><span className="text-cyan font-bold">projects</span> - Query flagship engineering &amp; AI architectures</p>
+            <p><span className="text-red font-bold">osint</span> - Display active intelligence gathering tools &amp; live feeds</p>
+            <p><span className="text-cyan font-bold">ai-lab</span> - Run real-time neural inference simulation benchmark</p>
             <p><span className="text-amber font-bold">threats</span> - Scan real-time global intelligence telemetry</p>
-            <p><span className="text-text font-bold">skills</span> - List full technology stack & capabilities</p>
-            <p><span className="text-green font-bold">whoami</span> - Display operator profile & credentials</p>
-            <p><span className="text-cyan font-bold">contact</span> - Open direct transmission channels (Email, GitHub, X)</p>
-            <p><span className="text-text-faint font-bold">clear</span> - Purge terminal buffer</p>
+            <p><span className="text-text font-bold">skills</span> - Output tactical tech stack &amp; system proficiencies</p>
+            <p><span className="text-green font-bold">whoami</span> - Print operator identity &amp; clearance level</p>
+            <p><span className="text-cyan font-bold">contact</span> - Open secure communication channels</p>
+            <p><span className="text-violet font-bold">matrix</span> - Decrypt live telemetry binary stream</p>
+            <p><span className="text-text-faint font-bold">clear</span> - Wipe active console memory</p>
           </div>
         )
         type = 'system'
@@ -61,8 +57,8 @@ export function InteractiveTerminal() {
 
       case 'projects':
         response = (
-          <div className="space-y-1.5 text-xs text-text-dim">
-            <p className="text-green font-bold">ACTIVE PRODUCTION DEPLOYMENTS (4):</p>
+          <div className="space-y-1.5 text-xs text-text-dim font-mono">
+            <p className="text-green font-bold">DEPLOYED PRODUCTION PLATFORMS (4):</p>
             <p>1. <span className="text-red font-bold">[OSN Extra]</span> - Live Tactical Threat Matrix (Leaflet, D3, Web Audio) → <a href="https://osn-e-xtra.vercel.app/" target="_blank" rel="noreferrer" className="text-cyan underline">osn-e-xtra.vercel.app</a></p>
             <p>2. <span className="text-cyan font-bold">[Global Security Data Poll]</span> - 3D Globe Intelligence Platform (Next.js, WebGL) → <a href="https://osn-website.vercel.app/" target="_blank" rel="noreferrer" className="text-cyan underline">osn-website.vercel.app</a></p>
             <p>3. <span className="text-cyan font-bold">[AI Models Lab]</span> - Visual playground for comparing generative AI models → <a href="https://iamge-lab-website.vercel.app/" target="_blank" rel="noreferrer" className="text-cyan underline">iamge-lab-website.vercel.app</a></p>
@@ -72,13 +68,14 @@ export function InteractiveTerminal() {
         type = 'success'
         break
 
+      case 'osint':
       case 'osn':
         response = (
-          <div className="space-y-1 text-xs text-text-dim">
+          <div className="space-y-1 text-xs text-text-dim font-mono">
             <p className="text-red font-bold">OSN — OBSERVER SECURITY NETWORK</p>
-            <p>Role: Founder, Lead Architect & Security Data Engineer</p>
-            <p>Function: Real-time open-source intelligence pipeline aggregating dozens of military, aviation, and geopolitical feeds into unified live tactical dashboards.</p>
-            <p className="text-green">STATUS: 24/7 ACTIVE SURVEILLANCE MATRIX</p>
+            <p>Founder &amp; Lead Systems Architect: OSK</p>
+            <p>Function: Real-time intelligence pipeline aggregating 48+ feeds across global security networks, mapping crisis telemetry onto interactive tactical matrices.</p>
+            <p className="text-green">STATUS: 24/7 ACTIVE RADAR SURVEILLANCE</p>
           </div>
         )
         type = 'success'
@@ -86,10 +83,10 @@ export function InteractiveTerminal() {
 
       case 'ai-lab':
         response = (
-          <div className="space-y-1 text-xs text-text-dim">
-            <p className="text-cyan font-bold">AI MODELS LABORATORY [TELEMETRY]:</p>
+          <div className="space-y-1 text-xs text-text-dim font-mono">
+            <p className="text-cyan font-bold">AI INFERENCE &amp; VRAM BENCHMARK LAB:</p>
             <p>• Architecture: Next.js 15, Three.js 3D Viewport, Web Audio Sound Synthesis</p>
-            <p>• Features: Real-time model latency comparison, side-by-side prompt benchmarking, smart low-end GPU detection fallback</p>
+            <p>• Quantization: INT4 / INT8 / FP16 Latency &amp; Memory Allocation Profiling</p>
             <p>• Live URL: <a href="https://iamge-lab-website.vercel.app/" target="_blank" rel="noreferrer" className="text-cyan underline">iamge-lab-website.vercel.app</a></p>
           </div>
         )
@@ -99,10 +96,10 @@ export function InteractiveTerminal() {
       case 'threats':
         audio.playAlert()
         response = (
-          <div className="space-y-1 text-xs text-red">
+          <div className="space-y-1 text-xs text-red font-mono">
             <p className="font-bold">⚠️ OSN THREAT ASSESSMENT // LIVE INTERCEPT:</p>
-            <p>[SECTOR-01: MIDDLE EAST] - THREAT LEVEL: ELEVATED (14 Live Incidents)</p>
-            <p>[SECTOR-02: EASTERN EUROPE] - THREAT LEVEL: CRITICAL (28 Live Incidents)</p>
+            <p>[SECTOR-01: TEL AVIV HQ / MIDDLE EAST] - THREAT LEVEL: ELEVATED (14 Live Incidents)</p>
+            <p>[SECTOR-02: KYIV / EASTERN EUROPE] - THREAT LEVEL: CRITICAL (28 Live Incidents)</p>
             <p>[SECTOR-03: RED SEA CORRIDOR] - THREAT LEVEL: CRITICAL (19 Maritime Alerts)</p>
             <p className="text-green">✓ ALL SENSOR ARRAYS RESPONDING NORMALLY</p>
           </div>
@@ -112,11 +109,11 @@ export function InteractiveTerminal() {
 
       case 'skills':
         response = (
-          <div className="space-y-1 text-xs text-text-dim">
-            <p className="text-green font-bold">TECHNICAL MATRIX & CAPABILITIES:</p>
-            <p>• <span className="text-text font-bold">Frontend & Visuals:</span> React 19, Next.js, TypeScript, Tailwind CSS, WebGL, Three.js, Canvas 2D/3D, D3.js, Web Audio API</p>
-            <p>• <span className="text-text font-bold">Backend & Automation:</span> Python, Node.js, FastAPI, Real-time WebSockets, REST APIs, NTFY Push Engine</p>
-            <p>• <span className="text-text font-bold">AI & Intelligence:</span> Gemini API, Multi-Model Cascades, Search Grounding, OSINT Data Pipelines, Threat Classification</p>
+          <div className="space-y-1 text-xs text-text-dim font-mono">
+            <p className="text-green font-bold">OPERATOR LOADOUT MATRIX:</p>
+            <p>• <span className="text-text font-bold">Frontend &amp; 3D:</span> React 19, Next.js 15, TypeScript, WebGL/Three.js, Canvas 2D/3D, Web Audio API</p>
+            <p>• <span className="text-text font-bold">AI/ML &amp; Automation:</span> Gemini Multi-Model Cascades, Search Grounding, Quantization Profiling, Python 3.12</p>
+            <p>• <span className="text-text font-bold">Security &amp; OSINT:</span> Realtime Radar Ingestion, WebSockets, Anomaly Scoring, NTFY Push Engine</p>
           </div>
         )
         type = 'success'
@@ -124,10 +121,11 @@ export function InteractiveTerminal() {
 
       case 'whoami':
         response = (
-          <div className="space-y-1 text-xs text-text-dim">
-            <p className="text-text font-bold">OPERATOR: <span className="text-green">OSK (OSK0020)</span></p>
-            <p>Title: Independent Full-Stack Developer & Real-Time OSINT Architect</p>
-            <p>Mission: Turning chaotic live data into crystal-clear interactive interfaces and high-performance digital experiences.</p>
+          <div className="space-y-1 text-xs text-text-dim font-mono">
+            <p className="text-text font-bold">OPERATOR: <span className="text-green">OSK // SENIOR CREATIVE TECHNOLOGIST &amp; OSINT ARCHITECT</span></p>
+            <p>Clearance: <span className="text-cyan">LEVEL-5 TOP_SECRET</span></p>
+            <p>Status: <span className="text-green">ACTIVE_COMBAT_READINESS</span></p>
+            <p>Location: <span className="text-amber">TEL AVIV GRID // 32.0853°N 34.7818°E</span></p>
           </div>
         )
         type = 'system'
@@ -135,20 +133,15 @@ export function InteractiveTerminal() {
 
       case 'contact':
         response = (
-          <div className="space-y-1 text-xs text-text-dim">
-            <p className="text-cyan font-bold">TRANSMISSION CHANNELS:</p>
+          <div className="space-y-1 text-xs text-text-dim font-mono">
+            <p className="text-cyan font-bold">SECURE TRANSMISSION CHANNELS:</p>
             <p>• Email: <a href="mailto:oristern8@gmail.com" className="text-green underline">oristern8@gmail.com</a></p>
             <p>• GitHub: <a href="https://github.com/OSK0020" target="_blank" rel="noreferrer" className="text-green underline">github.com/OSK0020</a></p>
-            <p>• OSN Network: <a href="https://osn-e-xtra.vercel.app/" target="_blank" rel="noreferrer" className="text-green underline">osn-e-xtra.vercel.app</a></p>
+            <p>• PGP Fingerprint: <span className="text-text-faint font-mono">4A7B 89C1 2F0E E1D9 93B4</span></p>
           </div>
         )
         type = 'system'
         break
-
-      case 'clear':
-        setHistory([])
-        setInput('')
-        return
 
       case 'matrix':
         audio.playRadarSweep()
@@ -160,15 +153,15 @@ export function InteractiveTerminal() {
         type = 'success'
         break
 
-      case 'sudo':
-        response = <p className="text-red">ACCESS DENIED: Operator privileges already at maximum clearance (LEVEL 5).</p>
-        type = 'error'
-        break
+      case 'clear':
+        setHistory([])
+        setInput('')
+        return
 
       default:
         response = (
-          <p className="text-text-faint">
-            Command not recognized: <span className="text-red font-mono">{cleanCmd}</span>. Type <span className="text-green font-mono">help</span> for command list.
+          <p className="text-text-faint font-mono">
+            Command not recognized: <span className="text-red font-mono">{cleanCmd}</span>. Type <span className="text-green font-mono">help</span> for directory.
           </p>
         )
         type = 'error'
@@ -203,62 +196,60 @@ export function InteractiveTerminal() {
   }
 
   return (
-    <div className="flex flex-col rounded-2xl border border-line bg-bg-panel font-mono text-[12.5px] shadow-[0_30px_90px_-20px_rgba(0,0,0,0.85)]">
-      {/* Terminal Title Bar */}
-      <div className="flex items-center justify-between border-b border-line px-4 py-3 text-text-faint">
+    <div className="flex h-[440px] w-full flex-col rounded-2xl border border-green/30 bg-bg-panel p-5 font-mono text-xs shadow-neon-green/20 backdrop-blur-xl">
+      {/* Title Bar */}
+      <div className="mb-3 flex items-center justify-between border-b border-line pb-3 text-text-faint">
         <div className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-red/80" />
-          <span className="h-2.5 w-2.5 rounded-full bg-amber/80" />
-          <span className="h-2.5 w-2.5 rounded-full bg-green/80" />
-          <span className="ml-2 font-bold text-text-dim">operator@osk-terminal:~</span>
+          <div className="h-2.5 w-2.5 rounded-full bg-red" />
+          <div className="h-2.5 w-2.5 rounded-full bg-amber" />
+          <div className="h-2.5 w-2.5 rounded-full bg-green" />
+          <span className="text-[11px] font-bold text-cyan ml-2">bash - tactical-operator@terminal:~</span>
         </div>
-        <span className="text-[11px] text-green/80">INTERACTIVE SHELL</span>
+        <span className="text-[10px] text-text-faint">ENCRYPTED_SESSION: AES-256-GCM</span>
       </div>
 
-      {/* Terminal Body */}
+      {/* Terminal History */}
       <div
-        className="max-h-[340px] min-h-[260px] overflow-y-auto p-4.5 space-y-3"
+        className="flex-1 overflow-y-auto space-y-3 pr-2"
         onClick={() => inputRef.current?.focus()}
       >
         {history.map((entry, idx) => (
           <div key={idx} className="space-y-1">
-            <div className="flex items-center gap-2 text-text-faint">
-              <span className="text-green">➜</span>
-              <span className="text-cyan">~</span>
-              <span className="text-text font-bold">{entry.command}</span>
+            <div className="flex items-center gap-2 text-cyan font-bold">
+              <span>root@cyber-node:~$</span>
+              <span className="text-text">{entry.command}</span>
             </div>
             <div className="pl-4">{entry.output}</div>
           </div>
         ))}
-
-        {/* Live Input Line */}
-        <div className="flex items-center gap-2 pt-1 text-green">
-          <span>➜</span>
-          <span className="text-cyan">~</span>
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type 'help' or click quick chips below..."
-            className="flex-1 bg-transparent font-mono text-text outline-none placeholder:text-text-faint/60"
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
         <div ref={bottomRef} />
       </div>
 
-      {/* Quick Command Chips */}
-      <div className="flex flex-wrap items-center gap-1.5 border-t border-line bg-bg-panel-alt px-3.5 py-2.5 text-[11px]">
+      {/* Live Input Line */}
+      <div className="mt-3 flex items-center gap-2 border-t border-line/60 pt-3 text-cyan font-bold">
+        <span>❯</span>
+        <input
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type 'help' or click quick chips below..."
+          className="flex-1 bg-transparent font-mono text-text outline-none placeholder:text-text-faint/60"
+          autoComplete="off"
+          spellCheck={false}
+        />
+      </div>
+
+      {/* Quick Chips */}
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-line/40 pt-2 text-[10.5px]">
         <span className="mr-1 text-text-faint">QUICK:</span>
-        {['projects', 'osn', 'threats', 'ai-lab', 'skills', 'contact'].map((cmd) => (
+        {['projects', 'osint', 'threats', 'ai-lab', 'skills', 'whoami', 'contact'].map((cmd) => (
           <button
             key={cmd}
             onClick={() => executeCommand(cmd)}
             onMouseEnter={() => audio.playHover()}
-            className="rounded border border-line-soft bg-bg px-2 py-0.5 text-text-dim transition-colors hover:border-green hover:text-green"
+            className="rounded border border-line-soft bg-bg-panel-alt px-2 py-0.5 text-text-dim hover:border-green hover:text-green transition-colors"
           >
             {cmd}
           </button>
