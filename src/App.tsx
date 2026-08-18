@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react'
 import { Nav } from './components/Nav'
 import { Hero } from './components/Hero'
 import { OsnSection } from './components/OsnSection'
@@ -45,6 +46,9 @@ export default function App() {
 
       {/* Dispatch Footer */}
       <Footer />
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   )
 }
