@@ -30,9 +30,19 @@
 @keyframes blink {
   50% { opacity: 0; }
 }
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
+}
+@keyframes pulse-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(61, 255, 160, 0.4)); }
+  50% { filter: drop-shadow(0 0 16px rgba(61, 255, 160, 0.8)); }
+}
+
 .animate-blip { animation: blip 1.8s ease-in-out infinite; }
 .animate-blink { animation: blink 1s step-end infinite; }
-.animate-spin-slow { animation: spin 3.4s linear infinite; }
+.animate-spin-slow { animation: spin 4s linear infinite; }
+.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
 
 @layer base {
   * {
@@ -47,6 +57,7 @@
     color: var(--color-text);
     font-family: var(--font-body);
     line-height: 1.6;
+    overflow-x: hidden;
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -61,6 +72,21 @@
     background: var(--color-green);
     color: #04140c;
   }
+
+  /* Custom Cyber Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-green-dim);
+  }
 }
 
 @layer utilities {
@@ -68,14 +94,23 @@
     background-image:
       linear-gradient(var(--color-line-soft) 1px, transparent 1px),
       linear-gradient(90deg, var(--color-line-soft) 1px, transparent 1px);
-    background-size: 64px 64px;
+    background-size: 48px 48px;
   }
   .text-balance {
     text-wrap: balance;
   }
+  .glow-green {
+    box-shadow: 0 0 20px rgba(61, 255, 160, 0.25);
+  }
+  .glow-red {
+    box-shadow: 0 0 20px rgba(255, 75, 62, 0.25);
+  }
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(95, 185, 255, 0.25);
+  }
 }
 
-/* Registered custom properties for the spotlight card reveal effect (see modern-web-guidance: interactive-content-reveal) */
+/* Registered custom properties for spotlight card */
 @property --spot-x {
   syntax: "<length-percentage>";
   inherits: true;
