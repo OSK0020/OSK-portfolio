@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #06090b;
+  --color-bg-panel: #0d1417;
+  --color-bg-panel-alt: #0f171b;
+  --color-line: #1c262a;
+  --color-line-soft: #141c1f;
+  --color-text: #e6efec;
+  --color-text-dim: #92a5a0;
+  --color-text-faint: #57655f;
+  --color-green: #3dffa0;
+  --color-green-dim: #1f8f5c;
+  --color-red: #ff4b3e;
+  --color-red-dim: #3d1512;
+  --color-cyan: #5fb9ff;
+  --color-amber: #ffb648;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+@keyframes blip {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .25; }
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
+.animate-blip { animation: blip 1.8s ease-in-out infinite; }
+.animate-blink { animation: blink 1s step-end infinite; }
+.animate-spin-slow { animation: spin 3.4s linear infinite; }
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+    background: var(--color-bg);
+  }
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    line-height: 1.6;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  ::selection {
+    background: var(--color-green);
+    color: #04140c;
+  }
+}
+
+@layer utilities {
+  .bg-grid {
+    background-image:
+      linear-gradient(var(--color-line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-line-soft) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Registered custom properties for the spotlight card reveal effect (see modern-web-guidance: interactive-content-reveal) */
+@property --spot-x {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 50%;
+}
+@property --spot-y {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+@property --spot-size {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: inherit;
+  transition: --spot-size 0.4s ease-out;
+  background: radial-gradient(
+    circle at var(--spot-x) var(--spot-y),
+    color-mix(in srgb, var(--spot-color, var(--color-green)) 14%, transparent),
+    transparent var(--spot-size, 0%)
+  );
+}
+@media (prefers-reduced-motion: reduce) {
+  .spotlight::before { transition: none; }
+}
