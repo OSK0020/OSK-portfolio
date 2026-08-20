@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import Lenis from 'lenis'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { subterraneanAudio } from '../utils/subterraneanAudio'
 import { tacticalAudio } from '../utils/tacticalAudio'
 import { audio } from '../utils/audioEngine'
 
@@ -18,6 +19,7 @@ export function useSmoothScroll() {
 
     // 2. Global Autoplay & AudioContext Auto-Unlock on first user gesture
     const unlockAudio = () => {
+      subterraneanAudio.init()
       tacticalAudio.init()
       audio.initContext()
       window.removeEventListener('pointerdown', unlockAudio)
@@ -45,10 +47,11 @@ export function useSmoothScroll() {
     // Guarantee starting at top
     lenis.scrollTo(0, { immediate: true })
 
-    // 4. Synchronize Lenis with GSAP ScrollTrigger
-    lenis.on('scroll', (e: { velocity: number }) => {
+    // 4. Synchronize Lenis with GSAP ScrollTrigger & Ambient Subterranean Depth
+    lenis.on('scroll', (e: { velocity: number; progress: number }) => {
       ScrollTrigger.update()
       tacticalAudio.updateVelocity(e.velocity)
+      subterraneanAudio.updateAmbientDepth(e.progress * 420)
     })
 
     const updateTicker = (time: number) => {
