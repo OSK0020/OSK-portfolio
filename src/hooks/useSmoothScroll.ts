@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import Lenis from 'lenis'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { tacticalAudio } from '../utils/tacticalAudio'
+import { audio } from '../utils/audioEngine'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -14,7 +16,22 @@ export function useSmoothScroll() {
 
     window.scrollTo(0, 0)
 
-    // 2. Initialize Lenis Inertial Momentum Scroll
+    // 2. Global Autoplay & AudioContext Auto-Unlock on first user gesture
+    const unlockAudio = () => {
+      tacticalAudio.init()
+      audio.initContext()
+      window.removeEventListener('pointerdown', unlockAudio)
+      window.removeEventListener('touchstart', unlockAudio)
+      window.removeEventListener('wheel', unlockAudio)
+      window.removeEventListener('keydown', unlockAudio)
+    }
+
+    window.addEventListener('pointerdown', unlockAudio, { passive: true, once: true })
+    window.addEventListener('touchstart', unlockAudio, { passive: true, once: true })
+    window.addEventListener('wheel', unlockAudio, { passive: true, once: true })
+    window.addEventListener('keydown', unlockAudio, { passive: true, once: true })
+
+    // 3. Initialize Lenis Inertial Momentum Scroll
     const lenis = new Lenis({
       duration: 1.15,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential deceleration
@@ -28,9 +45,10 @@ export function useSmoothScroll() {
     // Guarantee starting at top
     lenis.scrollTo(0, { immediate: true })
 
-    // 3. Synchronize Lenis with GSAP ScrollTrigger
-    lenis.on('scroll', () => {
+    // 4. Synchronize Lenis with GSAP ScrollTrigger
+    lenis.on('scroll', (e: { velocity: number }) => {
       ScrollTrigger.update()
+      tacticalAudio.updateVelocity(e.velocity)
     })
 
     const updateTicker = (time: number) => {
@@ -47,6 +65,10 @@ export function useSmoothScroll() {
       gsap.ticker.remove(updateTicker)
       lenis.destroy()
       ScrollTrigger.getAll().forEach((st) => st.kill())
+      window.removeEventListener('pointerdown', unlockAudio)
+      window.removeEventListener('touchstart', unlockAudio)
+      window.removeEventListener('wheel', unlockAudio)
+      window.removeEventListener('keydown', unlockAudio)
     }
   }, [])
 }
