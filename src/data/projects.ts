@@ -25,7 +25,7 @@ export const osnFeatured: Project = {
   name: 'OSN Extra',
   tag: 'Live Tactical Threat Matrix',
   description:
-    'A real-time command interface tracking geopolitical ultimatums, threat levels, and intelligence activity across the Middle East and beyond — with an interactive tactical radar, live alerts, and a four-stage cinematic entry sequence.',
+    'A real-time command interface tracking geopolitical ultimatums, threat levels, and intelligence activity across global conflict zones and international corridors — with an interactive tactical radar, live alerts, and a four-stage cinematic entry sequence.',
   tech: ['HTML5', 'Tailwind CSS', 'Leaflet.js', 'D3.js', 'Web Audio API'],
   status: 'live',
   liveUrl: 'https://osn-e-xtra.vercel.app/',

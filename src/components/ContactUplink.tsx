@@ -1,30 +1,31 @@
 import { useState } from 'react'
 import { audio } from '../utils/audioEngine'
 import { Reveal } from './Reveal'
+import { Button } from './ui/stateful-button'
 
 export function ContactUplink() {
   const [callsign, setCallsign] = useState('')
   const [frequency, setFrequency] = useState<'DEFENSE' | 'COMMERCIAL' | 'AI_LAB'>('COMMERCIAL')
   const [message, setMessage] = useState('')
-  const [isTransmitting, setIsTransmitting] = useState(false)
-  const [transmitted, setTransmitted] = useState(false)
 
-  const handleDispatch = (e: React.FormEvent) => {
+  const handleDispatchPromise = () => {
+    return new Promise((resolve) => {
+      // Simulate cryptographic packet encryption & handshake
+      setTimeout(() => {
+        const subject = encodeURIComponent(
+          `[OSK UPLINK] Transmission from ${callsign || 'Anonymous Operator'} // ${frequency}`
+        )
+        const body = encodeURIComponent(
+          `OPERATOR: ${callsign || 'Anonymous Operator'}\nFREQUENCY: ${frequency}\n\nTRANSMISSION PAYLOAD:\n${message || 'Requesting tactical engineering consultation.'}`
+        )
+        window.location.href = `mailto:oristern8@gmail.com?subject=${subject}&body=${body}`
+        resolve(true)
+      }, 1600)
+    })
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!message.trim()) return
-
-    setIsTransmitting(true)
-    audio.playAlert()
-
-    setTimeout(() => {
-      setIsTransmitting(false)
-      setTransmitted(true)
-      audio.playClick(1500)
-      // Open mailto with pre-filled content
-      const subject = encodeURIComponent(`[OSK UPLINK] Transmission from ${callsign || 'Anonymous Operator'} // ${frequency}`)
-      const body = encodeURIComponent(`OPERATOR: ${callsign}\nFREQUENCY: ${frequency}\n\nTRANSMISSION:\n${message}`)
-      window.location.href = `mailto:oristern8@gmail.com?subject=${subject}&body=${body}`
-    }, 1200)
   }
 
   return (
@@ -56,7 +57,7 @@ export function ContactUplink() {
               <span className="text-cyan">CIPHER: AES-256-GCM</span>
             </div>
 
-            <form onSubmit={handleDispatch} className="mt-6 space-y-5">
+            <form onSubmit={handleSubmit} className="mt-6 space-y-5">
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <div>
                   <label className="block text-[11px] text-text-faint uppercase font-bold tracking-wider mb-2">
@@ -86,7 +87,7 @@ export function ContactUplink() {
                           audio.playClick()
                         }}
                         onMouseEnter={() => audio.playHover()}
-                        className={`flex-1 rounded-lg border py-3 text-[11px] transition-all ${
+                        className={`flex-1 rounded-lg border py-3 text-[11px] transition-all cursor-pointer ${
                           frequency === freq
                             ? 'border-green bg-green/15 text-text font-bold shadow-neon-green/20'
                             : 'border-line bg-bg-panel-alt text-text-dim hover:border-text-dim'
@@ -119,14 +120,15 @@ export function ContactUplink() {
                   DIRECT TRANSMISSION TO: <span className="text-green font-bold">oristern8@gmail.com</span>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isTransmitting}
-                  onMouseEnter={() => audio.playHover()}
-                  className="rounded-lg border border-green bg-green/15 px-8 py-3.5 text-xs font-bold text-green transition-all hover:bg-green hover:text-[#05080e] hover:shadow-neon-green disabled:opacity-50"
+                {/* Stateful Button Integration */}
+                <Button
+                  onClick={handleDispatchPromise}
+                  loadingText="ENCRYPTING & DISPATCHING..."
+                  successText="✓ TRANSMISSION DELIVERED"
+                  className="w-full sm:w-auto"
                 >
-                  {isTransmitting ? 'ENCRYPTING & DISPATCHING...' : transmitted ? '✓ TRANSMISSION DELIVERED' : 'TRANSMIT PACKET ✉'}
-                </button>
+                  Send Message
+                </Button>
               </div>
             </form>
           </div>

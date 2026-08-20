@@ -1,5 +1,6 @@
 import { Reveal } from './Reveal'
 import { audio } from '../utils/audioEngine'
+import { MagneticButton } from './ui/magnetic-button'
 
 export function Footer() {
   return (
@@ -26,12 +27,16 @@ export function Footer() {
             <div className="mt-8">
               <a
                 href="mailto:oristern8@gmail.com"
-                onClick={() => audio.playClick(1600)}
-                onMouseEnter={() => audio.playHover()}
-                className="inline-flex items-center gap-2 rounded-lg border border-green bg-green/10 px-7 py-4 font-mono text-sm font-bold text-green transition-all hover:bg-green hover:text-[#06090b] hover:shadow-[0_0_24px_rgba(61,255,160,0.4)]"
+                className="inline-block"
               >
-                <span>INITIATE TRANSMISSION (EMAIL)</span>
-                <span>✉</span>
+                <MagneticButton
+                  strength={0.35}
+                  soundFrequency={1600}
+                  className="rounded-lg border border-green bg-green/10 px-7 py-4 font-mono text-sm font-bold text-green transition-all hover:bg-green hover:text-[#06090b] hover:shadow-[0_0_24px_rgba(61,255,160,0.4)]"
+                >
+                  <span>INITIATE TRANSMISSION (EMAIL)</span>
+                  <span className="ml-2">✉</span>
+                </MagneticButton>
               </a>
             </div>
           </div>

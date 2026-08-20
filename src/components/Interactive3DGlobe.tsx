@@ -13,13 +13,13 @@ interface NodePoint {
 }
 
 const NODES: NodePoint[] = [
-  { id: 'tlv', name: 'Tel Aviv', country: 'Israel', lat: 32.0853, lng: 34.7818, threatLevel: 'ELEVATED', threatColor: '#ff0055', activeEvents: 14 },
+  { id: 'gva', name: 'Geneva', country: 'Switzerland (Cyber Node)', lat: 46.2044, lng: 6.1432, threatLevel: 'MONITORED', threatColor: '#00f0ff', activeEvents: 14 },
   { id: 'kyiv', name: 'Kyiv', country: 'Ukraine', lat: 50.4501, lng: 30.5234, threatLevel: 'CRITICAL', threatColor: '#ff0055', activeEvents: 28 },
   { id: 'dc', name: 'Washington D.C.', country: 'USA', lat: 38.9072, lng: -77.0369, threatLevel: 'MONITORED', threatColor: '#00f0ff', activeEvents: 9 },
-  { id: 'teh', name: 'Tehran', country: 'Iran', lat: 35.6892, lng: 51.389, threatLevel: 'CRITICAL', threatColor: '#ff0055', activeEvents: 22 },
+  { id: 'tko', name: 'Tokyo', country: 'Japan', lat: 35.6762, lng: 139.6503, threatLevel: 'ELEVATED', threatColor: '#ffb800', activeEvents: 16 },
   { id: 'tpe', name: 'Taipei', country: 'Taiwan', lat: 25.033, lng: 121.5654, threatLevel: 'ELEVATED', threatColor: '#ffb800', activeEvents: 11 },
   { id: 'lon', name: 'London', country: 'UK', lat: 51.5074, lng: -0.1278, threatLevel: 'STABLE', threatColor: '#00ff9d', activeEvents: 4 },
-  { id: 'redsea', name: 'Bab el-Mandeb', country: 'Red Sea Corridor', lat: 12.5833, lng: 43.3333, threatLevel: 'CRITICAL', threatColor: '#ff0055', activeEvents: 19 },
+  { id: 'sgp', name: 'Singapore', country: 'Singapore Straits', lat: 1.3521, lng: 103.8198, threatLevel: 'MONITORED', threatColor: '#00f0ff', activeEvents: 12 },
 ]
 
 export function Interactive3DGlobe() {

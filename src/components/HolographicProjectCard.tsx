@@ -63,16 +63,26 @@ export function HolographicProjectCard({ project, accentColor, onOpenDossier }: 
         onMouseLeave={handleMouseLeave}
         style={{
           transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-          borderColor: accentColor ? `color-mix(in srgb, ${accentColor} 35%, var(--color-line))` : undefined,
-          transition: 'transform 0.15s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out',
+          borderColor: accentColor ? `color-mix(in srgb, ${accentColor} 45%, var(--color-line))` : undefined,
+          transition: 'transform 0.15s ease-out, box-shadow 0.25s ease-out, border-color 0.25s ease-out',
         }}
-        className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-line bg-bg-panel p-7 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)] group-hover:border-cyan/50 group-hover:shadow-neon-cyan/20"
+        className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-line bg-bg-panel p-7 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)] group-hover:border-cyan/60 group-hover:shadow-[0_0_30px_rgba(0,240,255,0.2)]"
       >
         {/* Holographic Glare Overlay */}
         <div
           className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-300"
           style={{
             background: `radial-gradient(400px circle at ${glarePos.x}% ${glarePos.y}%, rgba(0, 240, 255, ${glarePos.opacity}), transparent 70%)`,
+          }}
+        />
+
+        {/* Ambient Top Glow Bar */}
+        <div
+          className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{
+            background: accentColor
+              ? `linear-gradient(90deg, transparent, ${accentColor}, transparent)`
+              : 'linear-gradient(90deg, transparent, var(--color-cyan), transparent)',
           }}
         />
 
@@ -100,9 +110,9 @@ export function HolographicProjectCard({ project, accentColor, onOpenDossier }: 
           {project.metrics && (
             <div className="mt-5 grid grid-cols-3 gap-2 border-t border-line/60 pt-4">
               {project.metrics.map((m) => (
-                <div key={m.label} className="rounded-lg bg-bg-panel-alt p-2 text-center">
-                  <span className="block text-[9.5px] text-text-faint uppercase">{m.label}</span>
-                  <span className="block text-xs font-bold text-text mt-0.5">{m.value}</span>
+                <div key={m.label} className="rounded-lg bg-bg-panel-alt/80 border border-line-soft p-2 text-center">
+                  <span className="block text-[9.5px] text-text-faint uppercase font-mono">{m.label}</span>
+                  <span className="block text-xs font-bold text-cyan font-mono mt-0.5">{m.value}</span>
                 </div>
               ))}
             </div>
@@ -126,7 +136,7 @@ export function HolographicProjectCard({ project, accentColor, onOpenDossier }: 
             <button
               type="button"
               onClick={() => onOpenDossier?.(project)}
-              className="flex-1 rounded-lg border border-cyan/40 bg-cyan/10 py-2.5 font-mono text-xs font-bold text-cyan transition-all hover:bg-cyan hover:text-[#05080e] hover:shadow-neon-cyan"
+              className="flex-1 rounded-lg border border-cyan/40 bg-cyan/10 py-2.5 font-mono text-xs font-bold text-cyan transition-all hover:bg-cyan hover:text-[#05080e] hover:shadow-neon-cyan cursor-pointer"
             >
               INTEL DOSSIER 🔍
             </button>

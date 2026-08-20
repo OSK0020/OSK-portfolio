@@ -4,12 +4,31 @@ import { audio } from '../utils/audioEngine'
 export function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('#')) {
+      e.preventDefault()
+      audio.playClick(1300)
+      const target = document.querySelector(href)
+      if (target) {
+        const lenisInstance = (
+          window as unknown as { lenis?: { scrollTo: (el: Element | string) => void } }
+        ).lenis
+        if (lenisInstance) {
+          lenisInstance.scrollTo(target)
+        } else {
+          target.scrollIntoView({ behavior: 'smooth' })
+        }
+      }
+      setMobileOpen(false)
+    }
+  }
+
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-lg">
       <div className="mx-auto flex h-[70px] max-w-[1240px] items-center justify-between px-6">
         <a
           href="#top"
-          onClick={() => audio.playClick(1500)}
+          onClick={(e) => handleNavClick(e, '#top')}
           onMouseEnter={() => audio.playHover()}
           className="flex items-center gap-2.5 font-mono text-[17px] font-bold tracking-tight text-text group"
         >
@@ -22,51 +41,59 @@ export function Nav() {
         <nav className="hidden gap-6 text-[13px] font-mono text-text-dim lg:flex">
           <a
             href="#osn"
-            onClick={() => audio.playClick()}
+            onClick={(e) => handleNavClick(e, '#osn')}
             onMouseEnter={() => audio.playHover()}
-            className="transition-colors hover:text-green"
+            className="transition-colors hover:text-green cursor-pointer"
           >
-            // OSN NETWORK
+            // L1: OSN NETWORK
           </a>
           <a
             href="#globe"
-            onClick={() => audio.playClick()}
+            onClick={(e) => handleNavClick(e, '#globe')}
             onMouseEnter={() => audio.playHover()}
-            className="transition-colors hover:text-red"
+            className="transition-colors hover:text-red cursor-pointer"
           >
-            // 3D GLOBE
+            // L2: 3D GLOBE
           </a>
           <a
             href="#projects"
-            onClick={() => audio.playClick()}
+            onClick={(e) => handleNavClick(e, '#projects')}
             onMouseEnter={() => audio.playHover()}
-            className="transition-colors hover:text-cyan"
+            className="transition-colors hover:text-cyan cursor-pointer"
           >
-            // PROJECTS
+            // L3: ARSENAL
           </a>
           <a
             href="#skills"
-            onClick={() => audio.playClick()}
+            onClick={(e) => handleNavClick(e, '#skills')}
             onMouseEnter={() => audio.playHover()}
-            className="transition-colors hover:text-green"
+            className="transition-colors hover:text-green cursor-pointer"
           >
             // LOADOUT
           </a>
           <a
             href="#ai-lab"
-            onClick={() => audio.playClick()}
+            onClick={(e) => handleNavClick(e, '#ai-lab')}
             onMouseEnter={() => audio.playHover()}
-            className="transition-colors hover:text-amber"
+            className="transition-colors hover:text-amber cursor-pointer"
           >
-            // AI LAB
+            // L4: AI LAB
           </a>
           <a
             href="#terminal"
-            onClick={() => audio.playClick()}
+            onClick={(e) => handleNavClick(e, '#terminal')}
             onMouseEnter={() => audio.playHover()}
-            className="transition-colors hover:text-text"
+            className="transition-colors hover:text-text cursor-pointer"
           >
             // CLI
+          </a>
+          <a
+            href="#contact-uplink"
+            onClick={(e) => handleNavClick(e, '#contact-uplink')}
+            onMouseEnter={() => audio.playHover()}
+            className="transition-colors hover:text-cyan cursor-pointer"
+          >
+            // L5: UPLINK
           </a>
         </nav>
 
@@ -94,7 +121,12 @@ export function Nav() {
         >
           <span className="sr-only">Toggle Menu</span>
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={mobileOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d={mobileOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+            />
           </svg>
         </button>
       </div>
@@ -104,52 +136,52 @@ export function Nav() {
         <div className="border-b border-line bg-bg-panel px-6 py-4 lg:hidden space-y-3 font-mono text-xs">
           <a
             href="#osn"
-            onClick={() => setMobileOpen(false)}
+            onClick={(e) => handleNavClick(e, '#osn')}
             className="block py-1 text-text-dim hover:text-green"
           >
-            // OSN NETWORK
+            // L1: OSN NETWORK
           </a>
           <a
             href="#globe"
-            onClick={() => setMobileOpen(false)}
+            onClick={(e) => handleNavClick(e, '#globe')}
             className="block py-1 text-text-dim hover:text-red"
           >
-            // 3D GLOBE
+            // L2: 3D GLOBE
           </a>
           <a
             href="#projects"
-            onClick={() => setMobileOpen(false)}
+            onClick={(e) => handleNavClick(e, '#projects')}
             className="block py-1 text-text-dim hover:text-cyan"
           >
-            // PROJECTS
+            // L3: ARSENAL
           </a>
           <a
             href="#skills"
-            onClick={() => setMobileOpen(false)}
+            onClick={(e) => handleNavClick(e, '#skills')}
             className="block py-1 text-text-dim hover:text-green"
           >
             // LOADOUT
           </a>
           <a
             href="#ai-lab"
-            onClick={() => setMobileOpen(false)}
+            onClick={(e) => handleNavClick(e, '#ai-lab')}
             className="block py-1 text-text-dim hover:text-amber"
           >
-            // AI LAB
+            // L4: AI LAB
           </a>
           <a
             href="#terminal"
-            onClick={() => setMobileOpen(false)}
+            onClick={(e) => handleNavClick(e, '#terminal')}
             className="block py-1 text-text-dim hover:text-text"
           >
             // CLI TERMINAL
           </a>
           <a
             href="#contact-uplink"
-            onClick={() => setMobileOpen(false)}
+            onClick={(e) => handleNavClick(e, '#contact-uplink')}
             className="block py-1 text-text-dim hover:text-cyan"
           >
-            // CONTACT UPLINK
+            // L5: CONTACT UPLINK
           </a>
         </div>
       )}
